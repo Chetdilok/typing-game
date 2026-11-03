@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="th" style="color-scheme: light;"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เกมฝึกพิมพ์ดีด</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;800&amp;display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f5fb;--card:#fff;--tx:#1d2433;--mu:#7a8499;--ok:#16a34a;--bad:#dc2626;--ac:#6366f1;--bd:#e3e6ef;--okbg:#dcfce7;--badbg:#fee2e2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10131c;--card:#1a1f2d;--tx:#e8ebf3;--mu:#8b94aa;--ok:#4ade80;--bad:#f87171;--ac:#818cf8;--bd:#2a3144;--okbg:#14301f;--badbg:#3a1a1c}}
+:root[data-theme="dark"]{--bg:#10131c;--card:#1a1f2d;--tx:#e8ebf3;--mu:#8b94aa;--ok:#4ade80;--bad:#f87171;--ac:#818cf8;--bd:#2a3144;--okbg:#14301f;--badbg:#3a1a1c}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font-family:"Sarabun",system-ui,sans-serif;font-size:17px;min-height:100%}
+.wrap{max-width:860px;margin:0 auto;padding:14px}
+h1{font-size:24px;margin:0;font-weight:800}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+nav{display:flex;gap:6px}
+nav button,.btn{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+nav button.on,.btn.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
+.btn.danger{color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:12px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center}
+.stat b{display:block;font-size:24px;font-weight:800}
+.stat span{font-size:13px;color:var(--mu)}
+.bar{height:8px;background:var(--bd);border-radius:6px;margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .15s}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+select,input,textarea{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:8px 10px}
+select{flex:1;min-width:160px}
+.box{position:relative;font-size:26px;line-height:1.9;padding:14px;border-radius:12px;background:var(--bg);border:2px solid var(--bd);max-height:320px;overflow:auto;white-space:pre-wrap;word-break:break-word;cursor:text}
+.box.focus{border-color:var(--ac)}
+.box textarea{position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;border:0;padding:0;font-size:16px}
+.c{color:var(--mu)}
+.c.ok{color:var(--ok);background:var(--okbg)}
+.c.bad{color:var(--bad);background:var(--badbg);text-decoration:underline}
+.c.cur{color:var(--tx);background:color-mix(in srgb,var(--ac) 30%,transparent);border-bottom:3px solid var(--ac)}
+.hint{color:var(--mu);font-size:14px;margin-top:8px}
+.combo{min-height:28px;font-weight:800;color:var(--ac);font-size:20px}
+.over{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+.over.show{display:flex}
+.res{max-width:420px;width:100%;text-align:center}
+.res h2{margin:0 0 4px;font-size:26px}
+.big{font-size:44px;font-weight:800;color:var(--ac)}
+.grid2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.grid2 b{display:block;font-size:22px}
+.grid2 span{font-size:13px;color:var(--mu)}
+table{width:100%;border-collapse:collapse}
+td,th{padding:8px 6px;text-align:left;border-bottom:1px solid var(--bd)}
+th{font-size:13px;color:var(--mu)}
+td.n,th.n{text-align:right}
+tr.me td{background:var(--okbg);font-weight:700}
+.item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)}
+.hide{display:none}
+.mu{color:var(--mu);font-size:14px}
+@media(max-width:560px){.stats{grid-template-columns:repeat(3,1fr)}.box{font-size:21px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>⌨️ เกมฝึกพิมพ์ดีด</h1>
+  <nav><button data-t="play" class="on">เล่น</button><button data-t="board">🏆 อันดับ</button><button data-t="admin">⚙️ แอดมิน</button></nav>
+</header>
+
+<section id="play">
+  <div class="card">
+    <div class="stats">
+      <div class="stat"><b id="sT">0:00</b><span>เวลา</span></div>
+      <div class="stat"><b id="sW">0</b><span>คำ/นาที</span></div>
+      <div class="stat"><b id="sA">100%</b><span>ความแม่นยำ</span></div>
+      <div class="stat"><b id="sC">0</b><span>คอมโบ</span></div>
+      <div class="stat"><b id="sS">0</b><span>คะแนน</span></div>
+    </div>
+    <div class="bar"><i id="pg"></i></div>
+  </div>
+  <div class="card">
+    <div class="row"><select id="lv" style="flex:0 0 auto;min-width:130px"><option value="all">ทุกระดับ</option><option value="ง่าย">ง่าย</option><option value="ปานกลาง">ปานกลาง</option><option value="ยาก">ยาก</option></select><select id="sel"></select><button class="btn" id="rs">🔄 เริ่มใหม่</button></div>
+    <div class="combo" id="cb"></div>
+    <div class="box" id="box"><textarea id="ta" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea></div>
+    <div class="hint">คลิกที่กรอบแล้วเริ่มพิมพ์ได้เลย เวลาจะเริ่มนับเมื่อพิมพ์ตัวแรก · <span style="color:var(--ok)">เขียว = ถูก</span> · <span style="color:var(--bad)">แดง = ผิด</span> (ลบแล้วพิมพ์ใหม่ได้)</div>
+  </div>
+</section>
+
+<section id="board" class="hide">
+  <div class="card">
+    <div class="row"><select id="bsel"></select></div>
+    <table><thead><tr><th>#</th><th>ชื่อ</th><th class="n">คำ/นาที</th><th class="n">แม่นยำ</th><th class="n">คะแนน</th></tr></thead><tbody id="bb"></tbody></table>
+    <div class="mu" id="bn"></div>
+  </div>
+</section>
+
+<section id="admin" class="hide">
+  <div class="card" id="adm">
+    <h3 style="margin-top:0">เพิ่มบทความใหม่</h3>
+    <div class="row"><input id="at" placeholder="ชื่อบทความ" style="flex:1;min-width:160px"><select id="alv" style="flex:0 0 auto;min-width:110px"><option>ง่าย</option><option>ปานกลาง</option><option>ยาก</option></select><input id="agr" placeholder="ชั้น เช่น ป.3 (ไม่บังคับ)" style="width:170px"></div>
+    <textarea id="ab" rows="6" placeholder="วางข้อความหรือบทความที่ต้องการให้นักเรียนพิมพ์" style="width:100%"></textarea>
+    <div class="row" style="margin-top:10px"><button class="btn pri" id="add">➕ เพิ่มบทความ</button><button class="btn" id="pub">📢 เผยแพร่ให้นักเรียน</button><span class="mu" id="am"></span></div>
+    <div class="mu" id="pn">เพิ่มหรือลบบทความแล้ว ต้องกด “เผยแพร่” นักเรียนถึงจะเห็น</div>
+    <h3>บทความทั้งหมด</h3>
+    <div id="al"></div>
+    <div class="row" style="margin-top:12px"><button class="btn danger" id="clr">ล้างอันดับทั้งหมด</button></div>
+  </div>
+  <div class="card hide" id="noadm">หน้านี้สำหรับแอดมินเท่านั้น</div>
+</section>
+<footer style="text-align:center;color:var(--mu);font-size:14px;padding:18px 0 8px">พัฒนาโดย ครูเจตดิลก ถายา · โรงเรียนบ้านหนองสังข์</footer>
+</div>
+
+<div class="over" id="ov"><div class="card res">
+  <h2 id="rl">เสร็จแล้ว! 🎉</h2>
+  <div class="big" id="rs2">0</div><div class="mu">คะแนน</div>
+  <div class="grid2"><div><b id="rw">0</b><span>คำ/นาที</span></div><div><b id="ra">0%</b><span>แม่นยำ</span></div><div><b id="rt">0:00</b><span>เวลา</span></div></div>
+  <div class="row" style="justify-content:center"><input id="nm" placeholder="ชื่อของคุณ" maxlength="24"></div>
+  <div class="row" style="justify-content:center"><button class="btn pri" id="sv">💾 บันทึกคะแนน</button><button class="btn" id="ag">เล่นอีกครั้ง</button></div>
+  <div class="mu" id="rm"></div>
+</div></div>
+
+<script id="seed" type="application/json">[{"id": "t1", "title": "มอม", "level": "ยาก", "grade": "ม.3", "body": "เช้าวันหนึ่งในบ้านหลังเล็กริมคลอง มอม สุนัขพันธุ์ทางตัวหนึ่ง กำลังนอนหมอบอยู่หน้าประตูบ้าน มันเป็นสุนัขที่มีขนสีดำปนขาว รูปร่างไม่ใหญ่โตนัก แต่มีนิสัยซื่อสัตย์และรักเจ้าของเป็นอย่างมาก ทุกเช้ามอมจะเดินตามนายไปทั่วบ้าน บางครั้งก็นอนเฝ้าอยู่ใต้โต๊ะทำงาน เมื่อได้ยินเสียงนายเรียก มันจะรีบกระดิกหางและวิ่งเข้าไปหาทันที \"มอม มานี่เร็ว!\" นายร้องเรียก มอมรีบวิ่งเข้าไปหา พร้อมกับส่งเสียงเห่าเบา ๆ นายลูบหัวมันอย่างเอ็นดู ก่อนจะหยิบอาหารมาใส่ชามให้ มอมกินอาหารอย่างมีความสุข หลังจากนั้นมันก็นอนเฝ้าอยู่หน้าบ้านตามปกติ แต่แล้ววันหนึ่ง ทุกอย่างก็เปลี่ยนไป เมื่อเสียงเครื่องบินดังสนั่นอยู่บนท้องฟ้า ผู้คนต่างวิ่งหนีด้วยความตกใจ สงครามได้เริ่มต้นขึ้นแล้ว เสียงระเบิดดังมาจากระยะไกล บ้านเรือนสั่นสะเทือน ผู้คนรีบเก็บข้าวของเพื่ออพยพไปยังสถานที่ปลอดภัย นายรีบออกจากบ้านพร้อมครอบครัว ส่วนมอมวิ่งตามไปอย่างไม่ลดละ แต่ด้วยความวุ่นวายและผู้คนจำนวนมาก ทำให้มันพลัดหลงจากนายในที่สุด \"นายอยู่ที่ไหน มอมคิดถึงนายเหลือเกิน\" หากมอมพูดได้ มันคงอยากบอกเช่นนั้น หลายวันผ่านไป มอมต้องใช้ชีวิตอยู่ตามลำพัง มันเดินไปตามถนนที่เต็มไปด้วยเศษซากบ้านเรือน บางวันก็หาอาหารจากเศษขยะ บางวันก็ต้องอดทนต่อความหิวโหยและความหนาวเย็น แม้จะลำบากเพียงใด แต่มอมก็ยังไม่ลืมบ้านและเจ้าของที่มันรัก ทุกครั้งที่เห็นคนเดินผ่าน มอมจะรีบวิ่งเข้าไปหาและเงยหน้ามองด้วยความหวัง บางครั้งมันเข้าใจผิดคิดว่าเป็นนายของตน แต่เมื่อเข้าไปใกล้ก็พบว่าไม่ใช่ มันจึงเดินกลับไปอย่างเศร้าสร้อย วันหนึ่ง มอมได้กลิ่นอาหารที่คุ้นเคยจากบ้านหลังหนึ่ง มันรีบวิ่งเข้าไปอย่างรวดเร็ว แต่กลับถูกคนในบ้านไล่ออกมา มอมวิ่งหนีไปหลบอยู่ข้างกำแพง ก่อนจะนอนลงด้วยความเหนื่อยล้า ท้องฟ้าเริ่มมืดลง ลมเย็นพัดผ่านร่างกายที่อ่อนแรงของมัน ถึงแม้ชีวิตจะเต็มไปด้วยอุปสรรค แต่มอมยังคงรอคอยวันที่จะได้พบเจ้าของอีกครั้ง สำหรับมันแล้ว บ้านไม่ใช่เพียงสถานที่ที่ใช้พักอาศัย แต่เป็นสถานที่ที่เต็มไปด้วยความรัก ความอบอุ่น และความทรงจำที่งดงาม เรื่องราวของมอมทำให้เราเห็นว่า ความรักและความซื่อสัตย์ไม่ได้เกิดขึ้นเฉพาะในมนุษย์เท่านั้น สัตว์เลี้ยงก็มีหัวใจ มีความรู้สึก และต้องการความรักจากผู้เลี้ยงดูเช่นเดียวกัน เราจึงควรดูแลสัตว์เลี้ยงด้วยความเมตตา และไม่ทอดทิ้งพวกมันในยามที่เกิดความยากลำบาก"}]</script>
+<script>
+const PRISTINE=document.documentElement.outerHTML.replace(/^(<html[^>]*?) data-theme="[^"]*"/,"$1");
+const $=s=>document.querySelector(s);
+const E=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.textContent=h;return e};
+const ls={g(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},s(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const SAMPLES=[
+{id:"s1",title:"ตัวอย่าง: การพิมพ์สัมผัส",body:"การพิมพ์สัมผัสคือการพิมพ์โดยไม่ต้องมองแป้นพิมพ์ ใช้นิ้วทั้งสิบวางบนแป้นเหย้า ฝึกทุกวันวันละสิบนาที ไม่นานก็จะพิมพ์ได้เร็วและแม่นยำขึ้นอย่างเห็นได้ชัด"},
+{id:"s2",title:"ตัวอย่าง: ภูมิภาคของไทย",body:"ประเทศไทยมีสี่ภาคคือ ภาคเหนือ ภาคกลาง ภาคตะวันออกเฉียงเหนือ และภาคใต้ แต่ละภาคมีวัฒนธรรม อาหาร และภาษาถิ่นที่เป็นเอกลักษณ์ของตนเอง"},
+{id:"s3",title:"Sample: English",body:"The quick brown fox jumps over the lazy dog. Practice makes perfect, so keep typing every single day!"}];
+let db=null,uid="local",admin=true,texts=[],scores=[],cur=null,G=null,tm=null,txt="",cl=[],spans=[],saved=false;
+const list=()=>texts.length?texts:SAMPLES;
+const fmt=ms=>{const s=Math.floor(ms/1000);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+const level=w=>w<15?"🐣 มือใหม่":w<30?"⌨️ นักพิมพ์ฝึกหัด":w<45?"🔥 มือโปร":w<60?"⚡ นิ้วทอง":"🚀 นิ้วสายฟ้า";
+
+/* tabs */
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  ["play","board","admin"].forEach(t=>$("#"+t).classList.toggle("hide",t!==b.dataset.t));
+  if(b.dataset.t==="board")renderBoard();
+  if(b.dataset.t==="admin")renderAdmin();
+  if(b.dataset.t==="play")$("#ta").focus();
+});
+
+/* data */
+async function init(){
+  try{texts=JSON.parse($("#seed").textContent)}catch(e){texts=[]}
+  try{
+    if(window.claude){
+      db=await claude.use("db");const u=await claude.use("user");
+      if(db){admin=u?u.canEdit():false;uid=u?String(await u.id()):"guest"}
+    }
+  }catch(e){db=null}
+  if(db){
+
+    db.collection("scores").onSnapshot(s=>{scores=s.docs.map(d=>({id:d.id,...d.data()}));renderBoard()},()=>{});
+  }else{
+    scores=ls.g("ts",[]);admin=false;
+  }
+  renderSel();renderAdmin();
+}
+function renderSel(){
+  const keep=$("#sel").value;
+  for(const id of ["sel","bsel"]){
+    const s=$("#"+id);s.innerHTML="";
+    if(id==="bsel")s.append(new Option("ทุกบทความ","all"));
+    (id==="sel"?vis():list()).forEach(t=>s.append(new Option(label(t),t.id)));
+  }
+  if(keep&&vis().some(t=>t.id===keep))$("#sel").value=keep;
+  if(!cur||!list().some(t=>t.id===cur.id)||(G&&!G.start&&cur.id!==$("#sel").value))load();
+  else if(!G||!G.start)load();
+}
+
+/* game */
+function load(){
+  cur=vis().find(t=>t.id===$("#sel").value)||vis()[0]||list()[0];
+  txt=cur.body.replace(/\s+/g," ").trim();
+  const seg=window.Intl&&Intl.Segmenter?[...new Intl.Segmenter("th",{granularity:"grapheme"}).segment(txt)].map(x=>[x.index,x.index+x.segment.length]):Array.from(txt).map((c,i)=>[i,i+1]);
+  cl=seg;ci=[];cl.forEach(([s,e],k)=>{for(let i=s;i<e;i++)ci[i]=k});const box=$("#box");
+  box.querySelectorAll(".c").forEach(e=>e.remove());
+  spans=cl.map(([s,e])=>{const sp=E("span","c",txt.slice(s,e));box.append(sp);return sp});
+  G={start:0,prev:0,keys:0,err:0,combo:0,best:0,ok:0,done:false};
+  const ta=$("#ta");ta.value="";ta.maxLength=txt.length;
+  clearInterval(tm);tm=setInterval(tick,200);
+  paint();stats();box.scrollTop=0;
+}
+function paint(){
+  const v=$("#ta").value,t=v.length;
+  cl.forEach(([s,e],i)=>{
+    let c="c";
+    if(t>=e)c+=same(v.slice(s,e),txt.slice(s,e))?" ok":" bad";
+    else if(t>s)c+=part(v.slice(s,t),txt.slice(s,e))?" cur":" bad";
+    else if(t===s&&!G.done)c+=" cur";
+    spans[i].className=c;
+  });
+  const cs=$(".c.cur");if(cs){const b=$("#box"),r=cs.getBoundingClientRect(),br=b.getBoundingClientRect();if(r.bottom>br.bottom-40||r.top<br.top+10)b.scrollTop+=r.top-br.top-70}
+}
+function score(){return Math.max(0,G.ok*10+G.best*2-G.err*5)}
+function stats(){
+  const ms=G.start?(G.end||Date.now())-G.start:0,m=ms/60000;
+  const w=m>0.02?Math.round(G.ok/5/m):0;
+  G.wpm=w;G.acc=G.keys?Math.round((G.keys-G.err)/G.keys*100):100;
+  $("#sT").textContent=fmt(ms);$("#sW").textContent=w;$("#sA").textContent=G.acc+"%";
+  $("#sC").textContent=G.combo;$("#sS").textContent=score();
+  $("#pg").style.width=Math.min(100,$("#ta").value.length/txt.length*100)+"%";
+  $("#cb").textContent=G.combo>=30?"🚀 คอมโบ x"+G.combo+" สุดยอด!":G.combo>=20?"⚡ คอมโบ x"+G.combo:G.combo>=10?"🔥 คอมโบ x"+G.combo:"";
+}
+function tick(){if(G&&G.start&&!G.done)stats()}
+$("#ta").addEventListener("input",()=>{
+  if(G.done)return;
+  const v=$("#ta").value,t=v.length;
+  if(t>G.prev){
+    if(!G.start)G.start=Date.now();
+    for(let i=G.prev;i<t;i++){G.keys++;if(okc(v,i)){G.combo++;G.best=Math.max(G.best,G.combo)}else{G.err++;G.combo=0}}
+  }
+  G.prev=t;G.ok=0;cl.forEach(([s,e])=>{if(s<t)G.ok+=hit(v.slice(s,Math.min(e,t)),txt.slice(s,e))});
+  paint();stats();
+  if(t>=txt.length)finish();
+});
+$("#ta").addEventListener("paste",e=>e.preventDefault());
+$("#box").onclick=()=>$("#ta").focus();
+$("#ta").onfocus=()=>$("#box").classList.add("focus");
+$("#ta").onblur=()=>$("#box").classList.remove("focus");
+$("#sel").onchange=load;$("#rs").onclick=()=>{load();$("#ta").focus()};
+$("#ag").onclick=()=>{$("#ov").classList.remove("show");load();$("#ta").focus()};
+
+function finish(){
+  G.done=true;G.end=Date.now();clearInterval(tm);paint();stats();saved=false;
+  $("#rs2").textContent=score();$("#rw").textContent=G.wpm;$("#ra").textContent=G.acc+"%";$("#rt").textContent=fmt(G.end-G.start);
+  $("#rl").textContent="เสร็จแล้ว! "+level(G.wpm);
+  $("#nm").value=ls.g("name","");$("#rm").textContent="";$("#sv").disabled=false;
+  $("#ov").classList.add("show");$("#nm").focus();
+}
+$("#sv").onclick=async()=>{
+  const name=$("#nm").value.trim();if(!name){$("#rm").textContent="กรุณาใส่ชื่อก่อน";return}
+  if(saved)return;ls.s("name",name);
+  const row={name,textId:cur.id,textTitle:cur.title,wpm:G.wpm,acc:G.acc,score:score(),ts:Date.now(),uid};
+  try{
+    if(db)await db.collection("scores").add(row);
+    else{scores.push(row);ls.s("ts",scores)}
+    saved=true;$("#sv").disabled=true;$("#rm").textContent="บันทึกแล้ว!";
+    setTimeout(()=>{$("#ov").classList.remove("show");$("#bsel").value=cur.id;document.querySelector('nav [data-t="board"]').click()},700);
+  }catch(e){$("#rm").textContent="บันทึกไม่ได้ (อาจไม่มีสิทธิ์เขียนข้อมูล)"}
+};
+
+/* leaderboard */
+function renderBoard(){
+  const f=$("#bsel").value||"all",nm=ls.g("name","");
+  const rows=scores.filter(r=>f==="all"||r.textId===f).sort((a,b)=>b.score-a.score||b.wpm-a.wpm).slice(0,20);
+  const tb=$("#bb");tb.innerHTML="";
+  const med=["🥇","🥈","🥉"];
+  rows.forEach((r,i)=>{
+    const tr=E("tr",(db?r.uid===uid:r.name===nm)&&r.name===nm?"me":"");
+    tr.append(E("td","",med[i]||i+1),E("td","",r.name),E("td","n",r.wpm),E("td","n",r.acc+"%"),E("td","n",r.score));
+    tb.append(tr);
+  });
+  $("#bn").textContent=rows.length?"แสดง 20 อันดับแรก · "+level(rows[0].wpm)+" คือผู้นำ":"ยังไม่มีใครบันทึกคะแนน มาเป็นคนแรกกันเลย!";
+}
+$("#bsel").onchange=renderBoard;
+
+/* admin */
+function renderAdmin(){
+  $("#adm").classList.toggle("hide",!admin);$("#noadm").classList.toggle("hide",admin);
+  const l=$("#al");l.innerHTML="";
+  if(!texts.length){l.append(E("div","mu","ยังไม่มีบทความ ตอนนี้ใช้บทความตัวอย่างอยู่"));return}
+  texts.forEach(t=>{
+    const it=E("div","item"),b=E("button","btn danger","ลบ");
+    it.append(E("span","",t.title+" ("+t.body.length+" ตัวอักษร)"),b);
+    let armed=false;
+    b.onclick=async()=>{
+      if(!armed){armed=true;b.textContent="ยืนยันลบ?";return}
+      try{if(db)await db.collection("texts").doc(t.id).delete();else{texts=texts.filter(x=>x.id!==t.id);ls.s("tt",texts);renderSel();renderAdmin()}}catch(e){}
+    };
+    l.append(it);
+  });
+}
+$("#add").onclick=async()=>{
+  const title=$("#at").value.trim(),body=$("#ab").value.replace(/\s+/g," ").trim();
+  if(!title||!body){$("#am").textContent="กรุณาใส่ชื่อและเนื้อหา";return}
+  const row={title,body,ts:Date.now()};
+  try{
+    if(db)await db.collection("texts").add(row);
+    else{texts.push({id:"l"+row.ts,...row});ls.s("tt",texts);renderSel();renderAdmin()}
+    $("#at").value="";$("#ab").value="";$("#am").textContent="เพิ่มแล้ว";
+  }catch(e){$("#am").textContent="เพิ่มไม่ได้ (ไม่มีสิทธิ์แอดมิน)"}
+};
+let clrArmed=false;
+$("#clr").onclick=async()=>{
+  if(!clrArmed){clrArmed=true;$("#clr").textContent="กดอีกครั้งเพื่อยืนยัน";return}
+  clrArmed=false;$("#clr").textContent="ล้างอันดับทั้งหมด";
+  try{
+    if(db)for(const r of scores)await db.collection("scores").doc(r.id).delete();
+    else{scores=[];ls.s("ts",[]);renderBoard()}
+  }catch(e){}
+};
+var ci=[];
+/* เรียงสระ/วรรณยุกต์ในหนึ่งตัวอักษรได้ทั้งสองลำดับ เช่น ยู่ และ ยู่ */
+const srt=p=>p[0]+[...p.slice(1)].sort().join("");
+function same(p,c){return p.length===c.length&&srt(p)===srt(c)}
+function part(p,c){if(p[0]!==c[0])return false;const m=[...c.slice(1)];for(const ch of p.slice(1)){const k=m.indexOf(ch);if(k<0)return false;m.splice(k,1)}return true}
+function hit(p,c){if(!p||p[0]!==c[0])return 0;const m=[...c.slice(1)];let n=1;for(const ch of p.slice(1)){const k=m.indexOf(ch);if(k>=0){m.splice(k,1);n++}}return n}
+function okc(v,i){const [s,e]=cl[ci[i]];return part(v.slice(s,i+1),txt.slice(s,e))}
+const label=t=>(t.level?"["+t.level+(t.grade?" · "+t.grade:"")+"] ":"")+t.title;
+const vis=()=>list().filter(t=>$("#lv").value==="all"||t.level===$("#lv").value);
+$("#lv").onchange=()=>{renderSel();load()};
+const dirty=()=>{$("#pn").textContent="⚠️ มีการแก้ไขที่ยังไม่เผยแพร่ กด “เผยแพร่ให้นักเรียน” เพื่อให้นักเรียนเห็น"};
+function renderAdmin(){
+  $("#adm").classList.toggle("hide",!admin);$("#noadm").classList.toggle("hide",admin);
+  const l=$("#al");l.innerHTML="";
+  if(!texts.length){l.append(E("div","mu","ยังไม่มีบทความ ตอนนี้ใช้บทความตัวอย่างอยู่"));return}
+  texts.forEach(t=>{
+    const it=E("div","item"),b=E("button","btn danger","ลบ");
+    it.append(E("span","",label(t)+" ("+t.body.length+" ตัวอักษร)"),b);
+    let armed=false;
+    b.onclick=()=>{if(!armed){armed=true;b.textContent="ยืนยันลบ?";return}texts=texts.filter(x=>x.id!==t.id);dirty();renderSel();renderAdmin()};
+    l.append(it);
+  });
+}
+$("#add").onclick=()=>{
+  const title=$("#at").value.trim(),body=$("#ab").value.replace(/\s+/g," ").trim();
+  if(!title||!body){$("#am").textContent="กรุณาใส่ชื่อและเนื้อหา";return}
+  texts.push({id:"t"+Date.now(),title,level:$("#alv").value,grade:$("#agr").value.trim(),body});
+  $("#at").value="";$("#ab").value="";$("#agr").value="";$("#am").textContent="เพิ่มแล้ว";dirty();renderSel();renderAdmin();
+};
+$("#pub").onclick=async()=>{
+  try{
+    const ar=await claude.use("artifact");
+    if(!ar){$("#pn").textContent="เผยแพร่ไม่ได้ (ไม่มีสิทธิ์แก้ไขหน้านี้)";return}
+    const json=JSON.stringify(texts).replace(/</g,"\\u003c");
+    const html="<!DOCTYPE html>\n"+PRISTINE.replace(/(<script id="seed"[^>]*>)[\s\S]*?(<\/script>)/,(m,x,y)=>x+json+y);
+    $("#pn").textContent="กำลังเผยแพร่…";
+    await ar.publish(html);
+  }catch(e){$("#pn").textContent="เผยแพร่ไม่สำเร็จ "+((e&&e.code)||"")}
+};
+init();
+</script></body></html>
